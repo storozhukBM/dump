@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// Dump will simplify local print debug.
+// Just pass here all the variable that you want to dump to stdout.
 func Dump(values ...interface{}) {
 	if len(values) == 0 {
 		return
