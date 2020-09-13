@@ -5,7 +5,7 @@ One function library to simplify local print debug.
 How many times during local code debug you've written huge `fmt.Printf`s similar to that one?
 
 ```go
-fmt.Printf("Tx commit. offset: %v; body: %v; hash: %v; isValid: %v", offset, body, hashCode, codeIsValid)
+fmt.Printf("Tx commit. body: %v; hash: %v; isValid: %v; offset: %v;", body, hashCode, codeIsValid, offset)
 ```
 
 When you in the middle of complex code debug this printfs can be annoying and sometimes painful to maintain if you introduce new variables or rename things as you go.
@@ -13,14 +13,16 @@ When you in the middle of complex code debug this printfs can be annoying and so
 But now our struggles are over and you can just:
 
 ```go
-dump.Dump("Tx commit. ", offset, body, hashCode, codeIsValid)
+dump.Dump("Tx commit. ", body, hashCode, codeIsValid, offset)
 ```
 
 And you will see something like that in stdout:
 
 ```
-[DEBUG] /Projects/dump/example_test.go:23: Tx commit. offset: `{TxName:Final idx:34 deadline:16000000000}`; body: `txBody%1`; hashCode: `9487746`; codeIsValid: `false`
+[DEBUG] /dump/example_test.go:23: Tx commit. body: `txBody`; hashCode: `94876`; codeIsValid: `false`; offset: `{TxName:Final idx:34 deadline:160}`
 ```
+
+**Notice** that we automatically find the file and line number of `Dump` call, and we also resolve all the variable names you have in your code.
 
 ## How to use it
 You can import it as a library via Go modules or copy-paste `dump.go` file it to your project and add it to `.gitignore` if you don't want to pollute your dependencies.
