@@ -27,7 +27,15 @@ func TestDump(t *testing.T) {
 			Data:         "data string",
 			privateValue: []map[string]string{{"k": "v"}, {"a": "b"}},
 		}
-		dump.Dump(structVal, structVal.Data)
+		dump.Dump(structVal, structVal.privateValue[0]["k"], structVal.Data)
+
+		dump.Dump("other structure, goes here", idx)
+
+		dump.Dump()
+
+		dump.Dump(
+			idx,
+		)
 	})
 
 	if !strings.Contains(stdout, "[DEBUG] ") {
@@ -39,7 +47,13 @@ func TestDump(t *testing.T) {
 	if !strings.Contains(stdout, "dump_test.go:20: kv: `map[x:5.6 y:4.5]`; sli: `[true false false]`") {
 		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
 	}
-	if !strings.Contains(stdout, "structVal: `{Data:data string privateValue:[map[k:v] map[a:b]]}`; structVal.Data: `data string`") {
+	if !strings.Contains(stdout, "structVal: `{Data:data string privateValue:[map[k:v] map[a:b]]}`; structVal.privateValue[0][\"k\"]: `v`; structVal.Data: `data string`") {
+		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
+	}
+	if !strings.Contains(stdout, "\"other structure, goes here\", idx: `other structure, goes here`; `1`") {
+		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
+	}
+	if !strings.Contains(stdout, "[DEBUG] target line is invalid. Dump should start with `Dump(` and end with `)`") {
 		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
 	}
 }

@@ -61,6 +61,7 @@ func Dump(values ...interface{}) {
 		}
 		_, _ = fmt.Fprintf(buff, "\n")
 		fmt.Print(buff.String())
+		return
 	}
 
 	buff := &bytes.Buffer{}
