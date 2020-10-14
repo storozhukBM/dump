@@ -2,6 +2,7 @@ package dump_test
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/storozhukBM/dump"
 	"io"
 	"os"
@@ -36,15 +37,19 @@ func TestDump(t *testing.T) {
 		dump.Dump(
 			idx,
 		)
+
+		for i := 0; i < 3; i++ {
+			dump.Dump("repeated. ", i)
+		}
 	})
 
 	if !strings.Contains(stdout, "[DEBUG] ") {
 		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
 	}
-	if !strings.Contains(stdout, "dump_test.go:16: dump this bad boy. idx: `1`; strVar: `some data`") {
+	if !strings.Contains(stdout, "dump_test.go:17: dump this bad boy. idx: `1`; strVar: `some data`") {
 		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
 	}
-	if !strings.Contains(stdout, "dump_test.go:20: kv: `map[x:5.6 y:4.5]`; sli: `[true false false]`") {
+	if !strings.Contains(stdout, "dump_test.go:21: kv: `map[x:5.6 y:4.5]`; sli: `[true false false]`") {
 		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
 	}
 	if !strings.Contains(stdout, "structVal: `{Data:data string privateValue:[map[k:v] map[a:b]]}`; structVal.privateValue[0][\"k\"]: `v`; structVal.Data: `data string`") {
@@ -56,6 +61,10 @@ func TestDump(t *testing.T) {
 	if !strings.Contains(stdout, "[DEBUG] target line is invalid. Dump should start with `Dump(` and end with `)`") {
 		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
 	}
+	if !(strings.Contains(stdout, "repeated. i: `0`") && strings.Contains(stdout, "repeated. i: `1`") && strings.Contains(stdout, "repeated. i: `2`")) {
+		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
+	}
+	fmt.Println(stdout)
 }
 
 func captureStdout(t *testing.T, f func()) string {
