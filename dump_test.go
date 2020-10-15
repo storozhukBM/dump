@@ -2,6 +2,7 @@ package dump_test
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/storozhukBM/dump"
 	"io"
 	"os"
@@ -36,29 +37,33 @@ func TestDump(t *testing.T) {
 		dump.Dump(
 			idx,
 		)
+
+		for i := 0; i < 3; i++ {
+			dump.Dump("repeated. ", i)
+		}
 	})
 
-	if !strings.Contains(stdout, "[DEBUG] ") {
-		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
-	}
-	if !strings.Contains(stdout, "dump_test.go:16: dump this bad boy. idx: `1`; strVar: `some data`") {
-		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
-	}
-	if !strings.Contains(stdout, "dump_test.go:20: kv: `map[x:5.6 y:4.5]`; sli: `[true false false]`") {
-		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
-	}
-	if !strings.Contains(stdout, "structVal: `{Data:data string privateValue:[map[k:v] map[a:b]]}`; structVal.privateValue[0][\"k\"]: `v`; structVal.Data: `data string`") {
-		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
-	}
-	if !strings.Contains(stdout, "\"other structure, goes here\", idx: `other structure, goes here`; `1`") {
-		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
-	}
-	if !strings.Contains(stdout, "[DEBUG] target line is invalid. Dump should start with `Dump(` and end with `)`") {
-		t.Fatalf("invalid stdout: '''\n%v'''", stdout)
+	mustContain(t, stdout, "[DEBUG] ")
+	mustContain(t, stdout, "dump_test.go:17: dump this bad boy. idx: `1`; strVar: `some data`")
+	mustContain(t, stdout, "dump_test.go:21: kv: `map[x:5.6 y:4.5]`; sli: `[true false false]`")
+	mustContain(t, stdout, "structVal: `{Data:data string privateValue:[map[k:v] map[a:b]]}`; structVal.privateValue[0][\"k\"]: `v`; structVal.Data: `data string`")
+	mustContain(t, stdout, "\"other structure, goes here\", idx: `other structure, goes here`; `1`")
+	mustContain(t, stdout, "[DEBUG] target line is invalid. Dump should start with `Dump(` and end with `)`")
+	mustContain(t, stdout, "repeated. i: `0`")
+	mustContain(t, stdout, "repeated. i: `1`")
+	mustContain(t, stdout, "repeated. i: `2`")
+	fmt.Println(stdout)
+}
+
+func mustContain(t *testing.T, target string, expectedPart string) {
+	t.Helper()
+	if !strings.Contains(target, expectedPart) {
+		t.Fatalf("invalid target: '''\n%v'''", target)
 	}
 }
 
 func captureStdout(t *testing.T, f func()) string {
+	t.Helper()
 	r, w, pipeErr := os.Pipe()
 	if pipeErr != nil {
 		t.Fatalf("can't capture stdout: %v", pipeErr)
@@ -81,6 +86,5 @@ func captureStdout(t *testing.T, f func()) string {
 	if copyErr != nil {
 		t.Fatalf("can't copy captures output: %v", closeErr)
 	}
-
 	return buf.String()
 }
