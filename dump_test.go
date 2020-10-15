@@ -60,7 +60,6 @@ func mustContain(t *testing.T, target string, expectedPart string) {
 	if !strings.Contains(target, expectedPart) {
 		t.Fatalf("invalid target: '''\n%v'''", target)
 	}
-	return
 }
 
 func captureStdout(t *testing.T, f func()) string {
@@ -87,6 +86,5 @@ func captureStdout(t *testing.T, f func()) string {
 	if copyErr != nil {
 		t.Fatalf("can't copy captures output: %v", closeErr)
 	}
-
 	return buf.String()
 }
